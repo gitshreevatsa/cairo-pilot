@@ -1,27 +1,30 @@
-const axios = require("axios");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
-// const {
-//   CheerioWebBaseLoader,
-// } = require("langchain/document_loaders/web/cheerio");
-
-const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
-
-// const { MemoryVectorStore } = require("langchain/vectorstores/memory");
+const express = require("express");
 
 const { Pinecone } = require("@pinecone-database/pinecone");
+const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { PineconeStore } = require("langchain/vectorstores/pinecone");
-const { VectorDBQAChain } = require("langchain/chains");
-
-// const { RetrievalQAChain } = require("langchain/chains");
-// const { ChatOpenAI } = require("langchain/chat_models/openai");
 const { OpenAI } = require("langchain/llms/openai");
 
+const { VectorDBQAChain } = require("langchain/chains");
+
+const app = express();
+
+const port = 3000;
+
+app.get("/", async (req, res) => {
+  const response = await fetchWhat(req.query.q);
+  res.send(response);
+});
+
 async function fetchWhat(question) {
-  // add all links
-  const linkArrays = [];
-  const pinecone = new Pinecone();
+  const pinecone = new Pinecone({
+    environment: "gcp-starter",
+    apiKey: "6ed07b86-295c-4f80-9598-efeadf7cbf7c",
+  });
   const index = pinecone.Index("cairo-pilot");
-  const embeddings = new OpenAIEmbeddings();
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: "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",
+  });
 
   const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
     pineconeIndex: index,
@@ -29,7 +32,7 @@ async function fetchWhat(question) {
 
   console.log("vectorStore", vectorStore);
   const model = new OpenAI({
-    modelName : "gpt-3.5-turbo"
+    modelName: "gpt-3.5-turbo",
   });
   const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
     k: 5,
@@ -41,12 +44,11 @@ async function fetchWhat(question) {
   });
 
   console.log(response);
-  // change to pinecone-database from in memory and then check pinecone compatiblity with lanhcgain seeing the pinecone prompts and stroing using langchain
-  // ref : https://js.langchain.com/docs/integrations/vectorstores/pinecone
-  // const vectorStore = await MemoryVectorStore.fromDocuments(
-  //   splitDocs,
-  //   embeddings
-  // );
+  return response[0];
 }
 
-fetchWhat();
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});
+
+//
