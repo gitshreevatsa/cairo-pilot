@@ -1,5 +1,4 @@
 const axios = require("axios");
-const htmlparser2 = require("htmlparser2");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const {
   CheerioWebBaseLoader,
@@ -30,8 +29,11 @@ async function fetchWhat() {
     });
 
     const splitDocs = await textSplitter.splitDocuments(joinedText);
+
     const embeddings = new OpenAIEmbeddings();
 
+    // change to pinecone-database from in memory and then check pinecone compatiblity with lanhcgain seeing the pinecone prompts and stroing using langchain
+    // ref : https://js.langchain.com/docs/integrations/vectorstores/pinecone
     const vectorStore = await MemoryVectorStore.fromDocuments(
       splitDocs,
       embeddings
@@ -39,14 +41,14 @@ async function fetchWhat() {
 
     console.log(vectorStore);
 
-    const relevantDocs = await vectorStore.similaritySearch("What is Cairo?");
+    // const relevantDocs = await vectorStore.similaritySearch("What is Cairo?");
 
-    console.log(relevantDocs.length);
+    // console.log(relevantDocs.length);
     const model = new ChatOpenAI({ modelName: "gpt-3.5-turbo" });
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
 
     const response = await chain.call({
-      query: "What is cairo?",
+      query: "How to declare a mutable variable in Cairo?",
     });
 
     console.log(response);
