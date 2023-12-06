@@ -1,3 +1,4 @@
+const express = require("express");
 const axios = require("axios");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const {
@@ -11,7 +12,17 @@ const { MemoryVectorStore } = require("langchain/vectorstores/memory");
 const { RetrievalQAChain } = require("langchain/chains");
 const { ChatOpenAI } = require("langchain/chat_models/openai");
 
-async function fetchWhat() {
+const app = express();
+
+app.get("/answer", (req, res) => {
+  fetchWhat(req.query.param);
+  res.json("See the console for answers now: temp");
+});
+app.listen(4000, () => {
+  console.log(`App running localhost:4000`);
+});
+
+async function fetchWhat(question) {
   try {
     const loader = new CheerioWebBaseLoader(
       "https://book.cairo-lang.org/ch02-01-variables-and-mutability.html"
@@ -48,7 +59,7 @@ async function fetchWhat() {
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
 
     const response = await chain.call({
-      query: "How to declare a mutable variable in Cairo?",
+      query: question,
     });
 
     console.log(response);
@@ -56,5 +67,3 @@ async function fetchWhat() {
     throw new Error(err);
   }
 }
-
-fetchWhat();
