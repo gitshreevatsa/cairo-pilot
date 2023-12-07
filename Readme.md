@@ -4,6 +4,10 @@ However the complexity of the language and the concepts of starknet which are sl
 Addressing this requirement we have designed a Copilot/AI  which is dedicated to generating text and code responses which is up to date with the current tech specifications of starknet.
 The AI is capable of completing code, answer conceptual questions and queries around Starknet infrastructure questions.
 
+![image_2023-12-07_13-05-29](https://github.com/gitshreevatsa/cairo-pilot/assets/55878940/68a37f33-e16d-4d5f-acc1-9d68cbdb3139)
+
+
+
 ## Tech stack
 - Cairo smart contracts (sourced from github repos of openzeppelin,cairo book and starknet book)
 - Pinecone vector DB - to store trained data
@@ -19,6 +23,8 @@ The AI is capable of completing code, answer conceptual questions and queries ar
 ```
 https://url.com/?q={querystring}
 ```
+![image](https://github.com/gitshreevatsa/cairo-pilot/assets/55878940/3ec29e67-fafb-48f3-b5f1-f748b74f8e70)
+
 ## Applications
 - Docs Intelligent search
 - Updated information of cairo and starknet always available to new devs who want to learn. Easy lookup with code generation too.
