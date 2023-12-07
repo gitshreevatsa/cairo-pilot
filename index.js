@@ -47,7 +47,7 @@ async function fetchWhat(question) {
     embeddings
   );
   const model = new ChatOpenAI({ modelName: "gpt-3.5-turbo" });
-  const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(),{
+  const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(), {
     returnSourceDocuments: true,
   });
 
@@ -61,5 +61,3 @@ async function fetchWhat(question) {
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
-
-// export OPENAI_API_KEY=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

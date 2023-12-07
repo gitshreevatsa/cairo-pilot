@@ -62,4 +62,5 @@ button:hover {
   padding: 20px; /* Add more padding to the result container */
   background-color: #fff; /* Set a white background color */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  max-height: 400px; /* Adjust the max-height to your preference */
 }
