@@ -14,7 +14,7 @@ function App() {
   const handleSearchClick = () => {
     // Build the API URL with query parameters when the search button is clicked
     setApiUrl(
-      https://jsonplaceholder.typicode.com/posts?userId=${searchQuery || 1}
+      `https://jsonplaceholder.typicode.com/posts?userId=${searchQuery || 1}`
     );
   };
 
