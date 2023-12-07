@@ -4,13 +4,13 @@ const { Pinecone } = require("@pinecone-database/pinecone");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { PineconeStore } = require("langchain/vectorstores/pinecone");
 const { OpenAI } = require("langchain/llms/openai");
-
+const cors = require("cors");
 const { VectorDBQAChain } = require("langchain/chains");
 
 const app = express();
 
 const port = 3000;
-
+app.use(cors());
 app.get("/", async (req, res) => {
   const response = await fetchWhat(req.query.q);
   res.send(response);
