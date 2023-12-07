@@ -7,6 +7,17 @@ const { OpenAI } = require("langchain/llms/openai");
 const cors = require("cors");
 const { VectorDBQAChain } = require("langchain/chains");
 
+const {
+  CheerioWebBaseLoader,
+} = require("langchain/document_loaders/web/cheerio");
+
+const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+
+// const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
+const { MemoryVectorStore } = require("langchain/vectorstores/memory");
+
+const { RetrievalQAChain } = require("langchain/chains");
+const { ChatOpenAI } = require("langchain/chat_models/openai");
 const app = express();
 
 const port = 3000;
@@ -17,38 +28,38 @@ app.get("/", async (req, res) => {
 });
 
 async function fetchWhat(question) {
-  const pinecone = new Pinecone({
-    environment: "gcp-starter",
-    apiKey: "6ed07b86-295c-4f80-9598-efeadf7cbf7c",
-  });
-  const index = pinecone.Index("cairo-pilot");
-  const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: "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",
-  });
-
-  const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-    pineconeIndex: index,
+  const loader = new CheerioWebBaseLoader(
+    "https://book.starknet.io/ch02-09-starknet-js.html"
+  );
+  const data = await loader.load();
+  console.log(data);
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 500,
+    chunkOverlap: 0,
   });
 
-  console.log("vectorStore", vectorStore);
-  const model = new OpenAI({
-    modelName: "gpt-3.5-turbo",
-  });
-  const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-    k: 5,
+  const splitDocs = await textSplitter.splitDocuments(data);
+
+  const embeddings = new OpenAIEmbeddings();
+
+  const vectorStore = await MemoryVectorStore.fromDocuments(
+    splitDocs,
+    embeddings
+  );
+  const model = new ChatOpenAI({ modelName: "gpt-3.5-turbo" });
+  const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(),{
     returnSourceDocuments: true,
   });
 
   const response = await chain.call({
     query: question,
   });
-
   console.log(response);
-  return response[0];
+  return response;
 }
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
 
-//
+// export OPENAI_API_KEY=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
